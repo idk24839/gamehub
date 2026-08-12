@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GameHub</title>
+
+<style>
+body {
+    margin: 0;
+    background: #0b0b0f;
+    color: white;
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+header {
+    padding: 20px;
+    background: #121218;
+}
+
+h1 {
+    margin: 0;
+    color: #8b7cff;
+}
+
+button {
+    background: #6c5ce7;
+    color: white;
+    border: 0;
+    border-radius: 8px;
+    padding: 12px 18px;
+    margin: 6px;
+    font-size: 15px;
+}
+
+button:active {
+    transform: scale(.95);
+}
+
+#games {
+    padding: 20px;
+}
+
+.card {
+    background: #15151d;
+    border: 1px solid #292936;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 12px auto;
+    max-width: 350px;
+}
+
+#game {
+    display: none;
+    padding: 25px;
+}
+
+.score {
+    font-size: 45px;
+    margin: 20px;
+}
+
+.light {
+    background: #eeeeee;
+    color: #111111;
+}
+
+.light header {
+    background: white;
+}
+
+.light .card {
+    background: white;
+    border-color: #cccccc;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>GameHub</h1>
+<p>small games</p>
+</header>
+
+<div id="games">
+
+<div class="card">
+<h2>Click Rush</h2>
+<p>click as many times as possible</p>
+<button onclick="startClick()">Play</button>
+</div>
+
+<div class="card">
+<h2>Number Guess</h2>
+<p>guess the hidden number</p>
+<button onclick="startGuess()">Play</button>
+</div>
+
+<div class="card">
+<h2>Reaction Test</h2>
+<p>test your reaction speed</p>
+<button onclick="startReaction()">Play</button>
+</div>
+
+<br>
+
+<button onclick="toggleLight()">Light / Dark</button>
+
+</div>
+
+<div id="game"></div>
+
+<script>
+
+function showGame() {
+    document.getElementById("games").style.display = "none";
+    document.getElementById("game").style.display = "block";
+}
+
+function back() {
+    document.getElementById("game").style.display = "none";
+    document.getElementById("games").style.display = "block";
+}
+
+
+/* click rush */
+
+function startClick() {
+
+    showGame();
+
+    let score = 0;
+    let time = 10;
+
+    document.getElementById("game").innerHTML =
+        "<h2>Click Rush</h2>" +
+        "<div class='score' id='score'>0</div>" +
+        "<p>Time: <span id='time'>10</span></p>" +
+        "<button id='click'>CLICK</button>" +
+        "<br><button onclick='back()'>Back</button>";
+
+    document.getElementById("click").onclick = function() {
+
+        if (time > 0) {
+            score++;
+            document.getElementById("score").innerText = score;
+        }
+
+    };
+
+    let timer = setInterval(function() {
+
+        time--;
+
+        document.getElementById("time").innerText = time;
+
+        if (time <= 0) {
+
+            clearInterval(timer);
+
+            document.getElementById("click").disabled = true;
+
+            alert("You got " + score + " clicks!");
+
+        }
+
+    }, 1000);
+}
+
+
+/* number guess */
+
+function startGuess() {
+
+    showGame();
+
+    let number = Math.floor(Math.random() * 20) + 1;
+
+    document.getElementById("game").innerHTML =
+        "<h2>Number Guess</h2>" +
+        "<p>Guess a number from 1 to 20</p>" +
+        "<input id='guess' type='number'>" +
+        "<br>" +
+        "<button onclick='checkGuess()'>Guess</button>" +
+        "<p id='result'></p>" +
+        "<button onclick='back()'>Back</button>";
+
+    window.secretNumber = number;
+}
+
+
+function checkGuess() {
+
+    let guess =
+        Number(document.getElementById("guess").value);
+
+    let result =
+        document.getElementById("result");
+
+    if (guess === window.secretNumber) {
+
+        result.innerText = "Correct!";
+
+    } else if (guess < window.secretNumber) {
+
+        result.innerText = "Too low!";
+
+    } else {
+
+        result.innerText = "Too high!";
+
+    }
+}
+
+
+/* reaction */
+
+function startReaction() {
+
+    showGame();
+
+    document.getElementById("game").innerHTML =
+        "<h2>Reaction Test</h2>" +
+        "<p>Press the box and wait</p>" +
+        "<button id='reaction'>Start</button>" +
+        "<p id='reactionResult'></p>" +
+        "<button onclick='back()'>Back</button>";
+
+    let startTime = 0;
+
+    document.getElementById("reaction").onclick = function() {
+
+        let button = this;
+
+        if (button.innerText === "Start") {
+
+            button.innerText = "Wait...";
+
+            setTimeout(function() {
+
+                button.innerText = "CLICK NOW!";
+
+                startTime = Date.now();
+
+            }, 1500);
+
+        } else if (startTime > 0) {
+
+            let result = Date.now() - startTime;
+
+            document.getElementById("reactionResult").innerText =
+                result + " milliseconds";
+
+            button.innerText = "Start";
+
+            startTime = 0;
+        }
+    };
+}
+
+
+/* theme */
+
+function toggleLight() {
+
+    document.body.classList.toggle("light");
+
+}
+
+</script>
+
+</body>
+</html>
