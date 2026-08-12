@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GameHub</title>
+<style>
+*{box-sizing:border-box} :root{--bg:#080a10;--card:#121722;--card2:#1a2030;--text:#f7f8ff;--muted:#8e97aa;--line:#272e3d;--a:#7b5cff;--b:#21d9a5;--red:#ff6375}
+.light{--bg:#f3f5f9;--card:#fff;--card2:#e9ecf3;--text:#151820;--muted:#667080;--line:#dce0e8}
+body{margin:0;background:radial-gradient(circle at 15% 0,#261d52,transparent 35%),var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;min-height:100vh}
+.top{position:sticky;top:0;z-index:10;background:rgba(8,10,16,.86);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}.light .top{background:rgba(243,245,249,.88)}
+.nav{max-width:1000px;margin:auto;padding:14px 18px;display:flex;align-items:center;justify-content:space-between}.logo{font-size:24px;font-weight:900}.logo span{color:var(--a)}
+.navright{display:flex;gap:8px}.iconbtn,.secondary{border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:11px;padding:10px 13px}
+main{max-width:1000px;margin:auto;padding:22px 18px 60px}.hero{padding:28px;border:1px solid #3b316b;border-radius:24px;background:linear-gradient(135deg,rgba(123,92,255,.24),rgba(33,217,165,.08)),var(--card);box-shadow:0 20px 70px #0004}
+.hero h1{margin:0 0 8px;font-size:36px;letter-spacing:-1.5px}.hero p{margin:0 0 20px;color:var(--muted)}
+.primary{border:0;border-radius:11px;padding:12px 17px;background:var(--a);color:white;font-weight:800}
+.search{width:100%;margin:18px 0 12px;padding:14px 16px;border-radius:14px;border:1px solid var(--line);background:var(--card);color:var(--text);outline:0}
+.filters{display:flex;gap:8px;overflow:auto}.filter{white-space:nowrap;border:1px solid var(--line);background:var(--card);color:var(--muted);border-radius:999px;padding:9px 13px}.filter.active{background:var(--a);border-color:var(--a);color:white}
+.head{display:flex;justify-content:space-between;align-items:center;margin:28px 0 13px}.head h2{margin:0}.head small{color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.game{border:1px solid var(--line);background:var(--card);border-radius:17px;overflow:hidden;transition:.16s}.game:active{transform:scale(.97)}
+.gicon{height:105px;display:flex;align-items:center;justify-content:center;font-size:43px;background:linear-gradient(145deg,var(--card2),var(--card))}
+.ginfo{padding:13px}.ginfo b{display:block;margin-bottom:4px}.ginfo small{color:var(--muted)}.tag{display:inline-block;margin-top:8px;background:#7b5cff18;color:#a99cff;border-radius:7px;padding:4px 7px;font-size:10px}
+.overlay{display:none;position:fixed;inset:0;z-index:30;background:#000b;align-items:center;justify-content:center;padding:15px}.modal{width:min(500px,100%);max-height:90vh;overflow:auto;background:var(--card);border:1px solid var(--line);border-radius:22px;padding:22px;position:relative;text-align:center}.close{position:absolute;right:13px;top:13px;border:1px solid var(--line);background:var(--card2);color:var(--text);border-radius:50%;width:34px;height:34px;font-size:20px}
+.modal h2{margin:3px 35px 8px}.muted{color:var(--muted)}.big{font-size:52px;font-weight:900;color:var(--a);margin:14px}.area{min-height:160px;border-radius:15px;background:var(--card2);display:flex;align-items:center;justify-content:center;margin:15px 0;padding:15px}.row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}.choice{border:1px solid var(--line);background:var(--card2);color:var(--text);border-radius:11px;padding:13px 17px;font-weight:700}.input{padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--card2);color:var(--text);width:150px;outline:0}
+.targetarea{position:relative;height:240px;min-height:240px;overflow:hidden}.target{position:absolute;width:52px;height:52px;border-radius:50%;border:0;background:var(--b);box-shadow:0 0 25px #21d9a566}
+.avatar{width:110px;height:110px;border-radius:50%;margin:8px auto 15px;display:flex;align-items:center;justify-content:center;font-size:55px;background:var(--card2);border:3px solid var(--a);box-shadow:0 0 30px #7b5cff55}.avatarname{font-size:22px;font-weight:800}.coins{color:#ffd35a;font-weight:800}
+.avatargrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0}.avatarpick{font-size:27px;padding:10px;border:1px solid var(--line);border-radius:11px;background:var(--card2);color:var(--text)}.avatarpick.selected{border-color:var(--a);box-shadow:0 0 0 2px #7b5cff55}
+.colorgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:10px 0}.colorpick{height:35px;border-radius:9px;border:2px solid transparent}.colorpick.selected{border-color:white}
+.settingsrow{display:flex;justify-content:space-between;align-items:center;padding:15px 0;border-bottom:1px solid var(--line);text-align:left}
+@media(min-width:700px){.grid{grid-template-columns:repeat(3,1fr)}}
+</style>
+</head>
+<body>
+<div class="top"><div class="nav"><div class="logo">Game<span>Hub</span></div><div class="navright"><button class="iconbtn" onclick="openProfile()">👤</button><button class="iconbtn" onclick="openSettings()">⚙</button></div></div></div>
+<main>
+<div class="hero"><h1>pick a game.</h1><p id="welcome">quick games, custom avatars, and high scores.</p><button class="primary" onclick="openGame('click')">play something</button></div>
+<input id="search" class="search" placeholder="search games..." oninput="render()">
+<div class="filters"><button class="filter active" onclick="setFilter('all',this)">all</button><button class="filter" onclick="setFilter('arcade',this)">arcade</button><button class="filter" onclick="setFilter('skill',this)">skill</button><button class="filter" onclick="setFilter('puzzle',this)">puzzle</button><button class="filter" onclick="setFilter('luck',this)">luck</button></div>
+<div class="head"><h2>games</h2><small id="count"></small></div><div id="grid" class="grid"></div>
+</main>
+
+<div id="gameOverlay" class="overlay"><div class="modal"><button class="close" onclick="closeGame()">×</button><h2 id="title"></h2><div id="game"></div></div></div>
+
+<div id="profileOverlay" class="overlay"><div class="modal"><button class="close" onclick="closeProfile()">×</button><h2>your avatar</h2><div id="avatarPreview" class="avatar">😎</div><div id="profileName" class="avatarname">Player</div><p class="muted">coins: <span id="coinCount" class="coins">0</span></p><input id="nameInput" class="input" maxlength="14" placeholder="your name"><br><br><button class="primary" onclick="saveName()">save name</button><h3>choose avatar</h3><div id="avatarGrid" class="avatargrid"></div><h3>choose color</h3><div id="colorGrid" class="colorgrid"></div></div></div>
+
+<div id="settingsOverlay" class="overlay"><div class="modal"><button class="close" onclick="closeSettings()">×</button><h2>settings</h2><div class="settingsrow"><div><b>light mode</b><br><small class="muted">change the theme</small></div><button class="secondary" onclick="toggleTheme()">toggle</button></div><div class="settingsrow"><div><b>reset progress</b><br><small class="muted">coins, avatar, and scores</small></div><button class="secondary" onclick="resetAll()">reset</button></div></div></div>
+
+<script>
+const games=[
+["click","Click Rush","arcade","⚡","click as fast as you can"],["reaction","Reaction Test","skill","🎯","how fast can you react?"],["guess","Number Guess","puzzle","🔢","find the hidden number"],["memory","Memory Match","puzzle","🧠","remember the sequence"],["target","Target Tap","skill","⭕","hit targets before time runs out"],["coin","Coin Flip","luck","🪙","heads or tails"],["higher","Higher or Lower","luck","📈","guess the next number"],["math","Quick Math","puzzle","➗","solve before time runs out"],["word","Word Scramble","puzzle","🔤","unscramble the word"],["rps","Rock Paper Scissors","arcade","✊","beat the computer"]
+];
+let filter="all";
+function setFilter(x,b){filter=x;document.querySelectorAll(".filter").forEach(z=>z.classList.remove("active"));b.classList.add("active");render()}
+function render(){let q=document.getElementById("search").value.toLowerCase();let a=games.filter(g=>(filter==="all"||g[2]===filter)&&(g[1]+" "+g[4]).toLowerCase().includes(q));document.getElementById("grid").innerHTML=a.map(g=>`<div class="game" onclick="openGame('${g[0]}')"><div class="gicon">${g[3]}</div><div class="ginfo"><b>${g[1]}</b><small>${g[4]}</small><br><span class="tag">${g[2]}</span></div></div>`).join("");document.getElementById("count").innerText=a.length+" games"}
+render();
+
+function openGame(id){document.getElementById("gameOverlay").style.display="flex";let g=games.find(x=>x[0]===id);document.getElementById("title").innerText=g[1];let c=document.getElementById("game");({click:clickGame,reaction:reaction,guess:guess,memory:memory,target:target,coin:coin,higher:higher,math:math,word:word,rps:rps}[id])(c)}
+function closeGame(){document.getElementById("gameOverlay").style.display="none";document.getElementById("game").innerHTML=""}
+
+function clickGame(c){let s=0,t=10; c.innerHTML=`<div class="big" id="cs">0</div><p class="muted">time: <b id="ct">10</b></p><button class="primary" id="cb">tap!</button>`;let z=setInterval(()=>{t--;ct.innerText=t;if(t<=0){clearInterval(z);cb.disabled=true;addCoins(Math.floor(s/10));}},1000);cb.onclick=()=>{if(t>0){s++;cs.innerText=s}}}
+function reaction(c){c.innerHTML=`<div class="area" id="ra">tap to start</div><p id="rr" class="muted">wait for the signal</p>`;let state=0,start=0,to;ra.onclick=()=>{if(state===0){state=1;ra.innerText="wait...";to=setTimeout(()=>{state=2;start=Date.now();ra.innerText="TAP NOW!"},1000+Math.random()*2200)}else if(state===1){clearTimeout(to);state=0;ra.innerText="too early — retry"}else{let ms=Date.now()-start;rr.innerText=ms+" ms";ra.innerText="tap again";state=0;start=0;addCoins(ms<300?3:1)}}}
+function guess(c){window.gn=Math.floor(Math.random()*50)+1;window.ga=0;c.innerHTML=`<p class="muted">guess 1 to 50</p><input id="gi" class="input" type="number"><br><br><button class="primary" onclick="checkGuess()">guess</button><p id="gr" class="muted"></p>`}
+function checkGuess(){let x=Number(gi.value);ga++;if(x===gn){gr.innerText="correct! "+ga+" tries";addCoins(3)}else gr.innerText=x<gn?"too low":"too high"}
+function memory(c){let seq=[],u=[],round=0,lock=true;c.innerHTML=`<div class="big" id="mr">0</div><p id="mm" class="muted">press start</p><div class="row"><button class="choice" data-n="1">1</button><button class="choice" data-n="2">2</button><button class="choice" data-n="3">3</button><button class="choice" data-n="4">4</button></div><br><button class="primary" id="ms">start</button>`;ms.onclick=()=>next();function next(){round++;mr.innerText=round;seq.push(1+Math.floor(Math.random()*4));u=[];lock=true;mm.innerText="watch";let i=0,z=setInterval(()=>{document.querySelectorAll(".choice").forEach(b=>b.style.outline="none");if(i===seq.length){clearInterval(z);lock=false;mm.innerText="your turn";return}document.querySelector(`[data-n="${seq[i]}"]`).style.outline="3px solid var(--a)";i++},450)}document.querySelectorAll(".choice").forEach(b=>b.onclick=()=>{if(lock)return;let n=+b.dataset.n;u.push(n);if(n!==seq[u.length-1]){mm.innerText="game over — round "+round;lock=true;addCoins(round)}else if(u.length===seq.length){mm.innerText="nice";setTimeout(next,450)}})}
+function target(c){let s=0,t=15;c.innerHTML=`<div class="area targetarea" id="ta"><button class="target" id="tg"></button></div><p>score <b id="ts">0</b> · time <b id="tt">15</b></p>`;function move(){tg.style.left=Math.random()*(ta.clientWidth-55)+"px";tg.style.top=Math.random()*(ta.clientHeight-55)+"px"}tg.onclick=()=>{s++;ts.innerText=s;move()};move();let z=setInterval(()=>{t--;tt.innerText=t;if(t<=0){clearInterval(z);tg.remove();addCoins(s)}},1000)}
+function coin(c){c.innerHTML=`<div class="big" id="cf">?</div><p id="cm" class="muted">choose a side</p><div class="row"><button class="choice" onclick="flip('heads')">heads</button><button class="choice" onclick="flip('tails')">tails</button></div>`}
+function flip(p){let r=Math.random()<.5?"heads":"tails";cf.innerText=r==="heads"?"H":"T";cm.innerText=r===p?"you got it! +2 coins":"nope — it was "+r;if(r===p)addCoins(2)}
+function higher(c){window.hc=1+Math.floor(Math.random()*13);window.hs=0;c.innerHTML=`<div class="big" id="hc">${window.hc}</div><p id="hm" class="muted">higher or lower?</p><div class="row"><button class="choice" onclick="hp('higher')">higher</button><button class="choice" onclick="hp('lower')">lower</button></div>`}
+function hp(p){let n=1+Math.floor(Math.random()*13),ok=p==="higher"?n>window.hc:n<window.hc;if(n===window.hc)hm.innerText="tie — next";else if(ok){hs++;hm.innerText="correct! score "+hs}else{hm.innerText="wrong — score "+hs;addCoins(hs)}window.hc=n;hc.innerText=n}
+function math(c){let a=1+Math.floor(Math.random()*12),b=1+Math.floor(Math.random()*12);window.ma=a+b;c.innerHTML=`<div class="big">${a}+${b}</div><input class="input" id="mi" type="number"><br><br><button class="primary" onclick="mc()">answer</button><p id="mmath" class="muted"></p>`}
+function mc(){if(+mi.value===ma){mmath.innerText="correct! +2 coins";addCoins(2)}else mmath.innerText="not quite"}
+function word(c){let words=["planet","rocket","castle","dragon","button","orange","winter","guitar"];let w=words[Math.floor(Math.random()*words.length)];let sh=w.split("").sort(()=>Math.random()-.5).join("");window.ww=w;c.innerHTML=`<div class="big">${sh}</div><input class="input" id="wi"><br><br><button class="primary" onclick="wc()">check</button><p id="wr" class="muted"></p>`}
+function wc(){if(wi.value.toLowerCase()===ww){wr.innerText="correct! +3 coins";addCoins(3)}else wr.innerText="try again"}
+function rps(c){c.innerHTML=`<p class="muted">choose one</p><div class="row"><button class="choice" onclick="rpsPlay('rock')">✊ rock</button><button class="choice" onclick="rpsPlay('paper')">✋ paper</button><button class="choice" onclick="rpsPlay('scissors')">✌️ scissors</button></div><p id="rpsr" class="muted"></p>`}
+function rpsPlay(p){let a=["rock","paper","scissors"][Math.floor(Math.random()*3)],win=p==="rock"&&a==="scissors"||p==="paper"&&a==="rock"||p==="scissors"&&a==="paper";rpsr.innerText="computer chose "+a+" — "+(p===a?"tie":win?"you win! +2 coins":"you lose");if(win)addCoins(2)}
+
+const avatars=["😎","👾","🤖","🦊","🐸","🐼","🐱","🦄","🔥","⭐","🍕","🚀"];
+const colors=["#7b5cff","#21d9a5","#ff6375","#ffb84d","#4da3ff"];
+function getCoins(){return +(localStorage.gh_coins||0)}
+function addCoins(n){localStorage.gh_coins=getCoins()+n;updateProfile()}
+function openProfile(){document.getElementById("profileOverlay").style.display="flex";buildAvatar();updateProfile()}
+function closeProfile(){document.getElementById("profileOverlay").style.display="none"}
+function updateProfile(){let a=localStorage.gh_avatar||"😎",name=localStorage.gh_name||"Player",color=localStorage.gh_color||"#7b5cff";avatarPreview.innerText=a;avatarPreview.style.borderColor=color;profileName.innerText=name;coinCount.innerText=getCoins();welcome.innerText="welcome back, "+name+" — pick a game and play."}
+function buildAvatar(){avatarGrid.innerHTML=avatars.map(a=>`<button class="avatarpick ${a===(localStorage.gh_avatar||"😎")?"selected":""}" onclick="pickAvatar('${a}')">${a}</button>`).join("");colorGrid.innerHTML=colors.map(x=>`<button class="colorpick ${x===(localStorage.gh_color||"#7b5cff")?"selected":""}" style="background:${x}" onclick="pickColor('${x}')"></button>`).join("")}
+function pickAvatar(a){localStorage.gh_avatar=a;buildAvatar();updateProfile()}
+function pickColor(c){localStorage.gh_color=c;buildAvatar();updateProfile()}
+function saveName(){let n=nameInput.value.trim();if(n)localStorage.gh_name=n;nameInput.value="";updateProfile()}
+function openSettings(){document.getElementById("settingsOverlay").style.display="flex"}
+function closeSettings(){document.getElementById("settingsOverlay").style.display="none"}
+function toggleTheme(){document.body.classList.toggle("light");localStorage.gh_theme=document.body.classList.contains("light")?"light":"dark"}
+function resetAll(){if(confirm("reset your GameHub progress?")){Object.keys(localStorage).filter(k=>k.startsWith("gh_")).forEach(k=>localStorage.removeItem(k));location.reload()}}
+if(localStorage.gh_theme==="light")document.body.classList.add("light");updateProfile();
+</script>
+</body>
+</html>
