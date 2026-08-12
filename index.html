@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>GameHub</title>
+<style>
+*{box-sizing:border-box}
+:root{
+  --bg:#08090d;--bg2:#0e1118;--card:#131722;--card2:#191e2b;
+  --text:#f7f8fc;--muted:#9299aa;--accent:#7c5cff;--accent2:#20d9a5;
+  --line:#252b38;--danger:#ff5f70;
+}
+body.light{
+  --bg:#f4f5f9;--bg2:#fff;--card:#fff;--card2:#eceef5;
+  --text:#171923;--muted:#687080;--line:#dfe2ea;
+}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:radial-gradient(circle at 20% 0%,#211b45 0,transparent 35%),var(--bg);
+  color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  min-height:100vh;transition:.25s;
+}
+button,input{font:inherit}
+button{cursor:pointer}
+.top{
+  position:sticky;top:0;z-index:10;
+  background:rgba(8,9,13,.82);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);
+}
+.light .top{background:rgba(244,245,249,.86)}
+.nav{
+  max-width:980px;margin:auto;padding:16px 18px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.logo{font-size:24px;font-weight:900;letter-spacing:-1px}
+.logo span{color:var(--accent)}
+.navbtn{
+  width:42px;height:42px;border:1px solid var(--line);border-radius:12px;
+  background:var(--card);color:var(--text);font-size:19px;
+}
+main{max-width:980px;margin:auto;padding:24px 18px 50px}
+.hero{
+  padding:28px;border:1px solid #332b62;border-radius:24px;
+  background:linear-gradient(135deg,rgba(124,92,255,.22),rgba(32,217,165,.08)),var(--card);
+  box-shadow:0 18px 60px rgba(0,0,0,.2);overflow:hidden;position:relative;
+}
+.hero:after{
+  content:"";position:absolute;width:180px;height:180px;border-radius:50%;
+  right:-55px;top:-70px;background:rgba(124,92,255,.22);filter:blur(4px);
+}
+.hero h1{font-size:34px;margin:0 0 8px;letter-spacing:-1.5px}
+.hero p{color:var(--muted);margin:0 0 20px}
+.primary{
+  border:0;border-radius:12px;padding:12px 17px;background:var(--accent);
+  color:white;font-weight:750;box-shadow:0 8px 25px rgba(124,92,255,.25);
+}
+.search{
+  width:100%;margin:18px 0 14px;padding:14px 16px;border-radius:14px;
+  border:1px solid var(--line);outline:0;background:var(--card);color:var(--text);
+}
+.search:focus{border-color:var(--accent)}
+.filters{display:flex;gap:8px;overflow:auto;padding-bottom:5px}
+.filter{
+  white-space:nowrap;border:1px solid var(--line);background:var(--card);
+  color:var(--muted);border-radius:999px;padding:9px 13px;
+}
+.filter.active{background:var(--accent);border-color:var(--accent);color:white}
+.sectionhead{display:flex;align-items:center;justify-content:space-between;margin:28px 0 13px}
+.sectionhead h2{margin:0;font-size:20px}
+.sectionhead span{font-size:12px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.game{
+  border:1px solid var(--line);background:var(--card);border-radius:17px;
+  overflow:hidden;transition:.18s;min-width:0;
+}
+.game:active{transform:scale(.97)}
+.gameicon{
+  height:105px;display:flex;align-items:center;justify-content:center;
+  font-size:42px;background:linear-gradient(145deg,var(--card2),var(--card));
+}
+.gameinfo{padding:13px}
+.gameinfo b{display:block;font-size:15px;margin-bottom:4px}
+.gameinfo small{color:var(--muted)}
+.badge{
+  display:inline-block;margin-top:9px;padding:4px 7px;border-radius:7px;
+  background:rgba(124,92,255,.12);color:#a99bff;font-size:10px;font-weight:700;
+}
+.empty{display:none;text-align:center;color:var(--muted);padding:35px}
+.overlay{
+  position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.76);
+  display:none;align-items:center;justify-content:center;padding:16px;
+}
+.modal{
+  width:min(470px,100%);max-height:90vh;overflow:auto;
+  background:var(--card);border:1px solid var(--line);border-radius:22px;padding:22px;
+  box-shadow:0 25px 90px rgba(0,0,0,.45);position:relative;text-align:center;
+}
+.close{
+  position:absolute;right:14px;top:14px;width:34px;height:34px;border-radius:50%;
+  border:1px solid var(--line);background:var(--card2);color:var(--text);font-size:20px;
+}
+.modal h2{margin:4px 35px 8px;font-size:25px}
+.muted{color:var(--muted)}
+.big{font-size:52px;font-weight:900;color:var(--accent);margin:16px 0}
+.area{
+  min-height:155px;border-radius:16px;background:var(--card2);
+  display:flex;align-items:center;justify-content:center;margin:16px 0;
+  padding:16px;user-select:none;
+}
+.row{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+.secondary{
+  border:1px solid var(--line);border-radius:11px;padding:10px 14px;
+  background:var(--card2);color:var(--text);
+}
+.textinput{
+  width:150px;padding:12px;border-radius:10px;border:1px solid var(--line);
+  background:var(--card2);color:var(--text);outline:0;
+}
+.target{
+  width:52px;height:52px;border-radius:50%;border:0;background:var(--accent2);
+  box-shadow:0 0 25px rgba(32,217,165,.4);position:absolute;
+}
+.targetarea{position:relative;min-height:230px;overflow:hidden}
+.choice{
+  min-width:100px;border:1px solid var(--line);border-radius:12px;
+  padding:15px;background:var(--card2);color:var(--text);font-weight:700;
+}
+.settingsrow{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 0;border-bottom:1px solid var(--line);text-align:left;
+}
+.switch{
+  width:52px;height:30px;border-radius:20px;background:var(--card2);
+  border:1px solid var(--line);padding:3px;
+}
+.switch i{display:block;width:22px;height:22px;border-radius:50%;background:var(--muted);transition:.2s}
+.switch.on{background:var(--accent)}
+.switch.on i{transform:translateX(21px);background:white}
+@media(min-width:700px){.grid{grid-template-columns:repeat(3,1fr)}.hero h1{font-size:40px}}
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="nav">
+    <div class="logo">Game<span>Hub</span></div>
+    <button class="navbtn" onclick="openSettings()">⚙</button>
+  </div>
+</div>
+
+<main>
+  <div class="hero">
+    <h1>pick a game.</h1>
+    <p>quick games, high scores, zero downloads.</p>
+    <button class="primary" onclick="openGame('click')">play something</button>
+  </div>
+
+  <input id="search" class="search" placeholder="search games..." oninput="renderGames()">
+
+  <div class="filters">
+    <button class="filter active" onclick="setFilter('all',this)">all</button>
+    <button class="filter" onclick="setFilter('arcade',this)">arcade</button>
+    <button class="filter" onclick="setFilter('skill',this)">skill</button>
+    <button class="filter" onclick="setFilter('puzzle',this)">puzzle</button>
+    <button class="filter" onclick="setFilter('luck',this)">luck</button>
+  </div>
+
+  <div class="sectionhead">
+    <h2>games</h2><span id="count"></span>
+  </div>
+
+  <div id="grid" class="grid"></div>
+  <div id="empty" class="empty">no games found</div>
+</main>
+
+<div id="overlay" class="overlay">
+  <div class="modal">
+    <button class="close" onclick="closeGame()">×</button>
+    <h2 id="title"></h2>
+    <div id="content"></div>
+  </div>
+</div>
+
+<div id="settings" class="overlay">
+  <div class="modal">
+    <button class="close" onclick="closeSettings()">×</button>
+    <h2>settings</h2>
+    <p class="muted">make GameHub yours</p>
+    <div class="settingsrow">
+      <div><b>light mode</b><br><small class="muted">switch the theme</small></div>
+      <button id="themeSwitch" class="switch" onclick="toggleTheme()"><i></i></button>
+    </div>
+    <div class="settingsrow">
+      <div><b>saved high scores</b><br><small class="muted">stored on this device</small></div>
+      <button class="secondary" onclick="clearScores()">reset</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const games=[
+ {id:"click",name:"Click Rush",cat:"arcade",icon:"⚡",desc:"click as fast as you can"},
+ {id:"reaction",name:"Reaction Test",cat:"skill",icon:"🎯",desc:"how fast can you react?"},
+ {id:"guess",name:"Number Guess",cat:"puzzle",icon:"🔢",desc:"find the hidden number"},
+ {id:"memory",name:"Memory Match",cat:"puzzle",icon:"🧠",desc:"remember the sequence"},
+ {id:"target",name:"Target Tap",cat:"skill",icon:"⭕",desc:"hit the target before time runs out"},
+ {id:"coin",name:"Coin Flip",cat:"luck",icon:"🪙",desc:"heads or tails"},
+ {id:"higher",name:"Higher or Lower",cat:"luck",icon:"📈",desc:"guess the next card"}
+];
+let filter="all";
+
+function setFilter(x,btn){
+ filter=x;
+ document.querySelectorAll(".filter").forEach(b=>b.classList.remove("active"));
+ btn.classList.add("active");
+ renderGames();
+}
+function renderGames(){
+ const q=document.getElementById("search").value.toLowerCase();
+ const list=games.filter(g=>(filter==="all"||g.cat===filter)&&
+   (g.name.toLowerCase().includes(q)||g.desc.toLowerCase().includes(q)));
+ document.getElementById("grid").innerHTML=list.map(g=>`
+   <div class="game" onclick="openGame('${g.id}')">
+     <div class="gameicon">${g.icon}</div>
+     <div class="gameinfo"><b>${g.name}</b><small>${g.desc}</small>
+     <span class="badge">${g.cat}</span></div>
+   </div>`).join("");
+ document.getElementById("count").innerText=list.length+" games";
+ document.getElementById("empty").style.display=list.length?"none":"block";
+}
+renderGames();
+
+function openGame(id){
+ document.getElementById("overlay").style.display="flex";
+ const g=games.find(x=>x.id===id);
+ document.getElementById("title").innerText=g.name;
+ const c=document.getElementById("content");
+ if(id==="click")clickRush(c);
+ if(id==="reaction")reaction(c);
+ if(id==="guess")guess(c);
+ if(id==="memory")memory(c);
+ if(id==="target")targetTap(c);
+ if(id==="coin")coin(c);
+ if(id==="higher")higher(c);
+}
+function closeGame(){
+ document.getElementById("overlay").style.display="none";
+ document.getElementById("content").innerHTML="";
+}
+function openSettings(){document.getElementById("settings").style.display="flex"}
+function closeSettings(){document.getElementById("settings").style.display="none"}
+
+function clickRush(c){
+ let score=0,time=10,t;
+ c.innerHTML=`<div class="big" id="cs">0</div><p class="muted">time left: <b id="ct">10</b></p>
+ <button class="primary" id="cb">tap!</button><p id="cr" class="muted">go!</p>`;
+ const b=document.getElementById("cb");
+ b.onclick=()=>{if(time>0){score++;document.getElementById("cs").innerText=score}};
+ t=setInterval(()=>{time--;document.getElementById("ct").innerText=time;if(time<=0){
+ clearInterval(t);b.disabled=true;document.getElementById("cr").innerText="final score: "+score;saveBest("click",score)}},1000);
+}
+
+function reaction(c){
+ c.innerHTML=`<div class="area" id="ra">tap start</div><p id="rr" class="muted">wait for the signal</p>`;
+ let state=0,start=0,timer;
+ const a=document.getElementById("ra");
+ a.onclick=()=>{
+  if(state===0){state=1;a.innerText="wait...";timer=setTimeout(()=>{state=2;start=Date.now();a.innerText="TAP NOW!"},1000+Math.random()*2500)}
+  else if(state===1){clearTimeout(timer);state=0;a.innerText="too early — tap to retry"}
+  else{let ms=Date.now()-start;document.getElementById("rr").innerText=ms+" ms";a.innerText="tap to try again";state=0;saveBest("reaction",ms)}
+ };
+}
+
+function guess(c){
+ const n=Math.floor(Math.random()*50)+1;let tries=0;
+ c.innerHTML=`<p class="muted">guess a number from 1 to 50</p>
+ <input class="textinput" id="gi" type="number" min="1" max="50" placeholder="number">
+ <br><br><button class="primary" onclick="checkGuess()">guess</button>
+ <p id="gr" class="muted">good luck</p>`;
+ window.guessNumber=n;window.guessTries=0;
+}
+function checkGuess(){
+ const v=Number(document.getElementById("gi").value),r=document.getElementById("gr");
+ if(!v){r.innerText="enter a number";return}
+ window.guessTries++;
+ if(v===window.guessNumber){r.innerText="correct in "+window.guessTries+" tries!";saveBest("guess",window.guessTries)}
+ else r.innerText=v<window.guessNumber?"too low":"too high";
+}
+
+function memory(c){
+ let seq=[],user=[],round=0,locked=false;
+ c.innerHTML=`<div class="big" id="mr">0</div><p id="mm" class="muted">watch the sequence</p>
+ <div class="row"><button class="choice" data-n="1">1</button><button class="choice" data-n="2">2</button>
+ <button class="choice" data-n="3">3</button><button class="choice" data-n="4">4</button></div>
+ <br><button class="secondary" id="ms">start</button>`;
+ const msg=document.getElementById("mm");
+ const start=document.getElementById("ms");
+ function next(){
+  round++;seq.push(Math.floor(Math.random()*4)+1);user=[];locked=true;
+  document.getElementById("mr").innerText=round;msg.innerText="watch...";
+  let i=0;
+  const flash=setInterval(()=>{
+   if(i>0)document.querySelector(`[data-n="${seq[i-1]}"]`).style.outline="none";
+   if(i===seq.length){clearInterval(flash);locked=false;msg.innerText="your turn";return}
+   document.querySelector(`[data-n="${seq[i]}"]`).style.outline="3px solid var(--accent)";
+   i++;
+  },500);
+ }
+ start.onclick=()=>{seq=[];round=0;next()};
+ document.querySelectorAll(".choice").forEach(b=>b.onclick=()=>{
+  if(locked)return;
+  const n=Number(b.dataset.n);user.push(n);
+  if(n!==seq[user.length-1]){msg.innerText="game over — round "+round;locked=true;saveBest("memory",round);return}
+  if(user.length===seq.length){msg.innerText="nice! next round";setTimeout(next,500)}
+ });
+}
+
+function targetTap(c){
+ let score=0,time=15,timer;
+ c.innerHTML=`<p class="muted">hit as many targets as possible</p><div class="area targetarea" id="ta">
+ <button class="target" id="target"></button></div><p>score: <b id="ts">0</b> · time: <b id="tt">15</b></p>`;
+ const area=document.getElementById("ta"),target=document.getElementById("target");
+ function move(){
+  const x=Math.random()*(area.clientWidth-58),y=Math.random()*(area.clientHeight-58);
+  target.style.left=x+"px";target.style.top=y+"px";
+ }
+ target.onclick=()=>{score++;document.getElementById("ts").innerText=score;move()};
+ move();
+ timer=setInterval(()=>{time--;document.getElementById("tt").innerText=time;if(time<=0){
+  clearInterval(timer);target.style.display="none";saveBest("target",score)}},1000);
+}
+
+function coin(c){
+ c.innerHTML=`<div class="big" id="coinface">?</div><p id="coinmsg" class="muted">pick a side</p>
+ <div class="row"><button class="choice" onclick="flip('heads')">heads</button><button class="choice" onclick="flip('tails')">tails</button></div>`;
+ window.coinPick="";
+}
+function flip(pick){
+ const result=Math.random()<.5?"heads":"tails";
+ document.getElementById("coinface").innerText=result==="heads"?"H":"T";
+ document.getElementById("coinmsg").innerText=result===pick?"you got it!":"nope — it was "+result;
+}
+
+function higher(c){
+ let current=Math.floor(Math.random()*13)+1,score=0;
+ c.innerHTML=`<div class="big" id="card">${current}</div><p id="hm" class="muted">will the next number be higher or lower?</p>
+ <div class="row"><button class="choice" onclick="higherPick('higher')">higher</button>
+ <button class="choice" onclick="higherPick('lower')">lower</button></div>`;
+ window.highCurrent=current;window.highScore=score;
+}
+function higherPick(pick){
+ const next=Math.floor(Math.random()*13)+1,cur=window.highCurrent;
+ const correct=next===cur?"tie":(pick==="higher"?next>cur:next<cur);
+ if(correct==="tie")document.getElementById("hm").innerText="tie — try again";
+ else if(correct){window.highScore++;document.getElementById("hm").innerText="correct! score "+window.highScore}
+ else{document.getElementById("hm").innerText="wrong — final score "+window.highScore;saveBest("higher",window.highScore);window.highScore=0}
+ window.highCurrent=next;document.getElementById("card").innerText=next;
+}
+
+function saveBest(id,val){
+ const key="gh_"+id,old=localStorage.getItem(key);
+ let better=id==="reaction"||id==="guess" ? (!old||val<Number(old)) : (!old||val>Number(old));
+ if(better)localStorage.setItem(key,val);
+}
+function clearScores(){
+ games.forEach(g=>localStorage.removeItem("gh_"+g.id));
+ alert("high scores reset");
+}
+
+function toggleTheme(){
+ document.body.classList.toggle("light");
+ const on=document.body.classList.contains("light");
+ localStorage.setItem("gh_theme",on?"light":"dark");
+ document.getElementById("themeSwitch").classList.toggle("on",on);
+}
+if(localStorage.getItem("gh_theme")==="light"){
+ document.body.classList.add("light");
+ document.getElementById("themeSwitch").classList.add("on");
+}
+</script>
+</body>
+</html>
